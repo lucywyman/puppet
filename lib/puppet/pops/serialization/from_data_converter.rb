@@ -47,7 +47,12 @@ module Serialization
     end
 
     def resolve
-      @instance.send(:initialize, *super.values)
+      if @instance.is_a?(Bolt::Result)
+        hash = super.transform_keys(&:to_sym)
+        @instance.send(:initialize, hash.delete(:target), hash)
+      else
+        @instance.send(:initialize, *super.values)
+      end
       @instance
     end
   end
